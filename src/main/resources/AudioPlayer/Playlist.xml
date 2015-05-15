@@ -1,0 +1,24 @@
+<files resourcePath="/AudioPlayer/Files/">
+<file track="01" name="t2.mp3">		  	            <title>Piano bar music ...</title></file>
+<file track="04" name="maxi.mp3">	  	            <title>Maximilian Sandbaek - I've got you under my skin</title></file>
+<file track="06" name="Beni.mp3">		            <title>Kanal-1 Dokumentation, Benedicte Sandbaek</title></file>
+<file track="11" name="ENC007.mp3">	  	            <title>Olesya Sandbaek - Ballade Playback</title></file>
+<file track="12" name="Mozart_Mozart.mp3">	        <title>Mozart Mozart</title></file>
+<file track="15" name="Christina_Aguilera.mp3">	    <title>Christina Aguilera</title></file>
+<file track="16" name="Playback_Mozart_Mozart.mp3"> <title>Mozart Mozart - Playback</title></file>
+<file track="17" name="Titel_4_Unbekannter.mp3">    <title>Rock me Amadeus</title></file>
+</files>
+        <!--
+        <file track="02" name="alpha_vid.flv">		        <title>Adobe example ...</title></file>
+        <file track="03" name="oow2010-2.flv">		        <title>Video ...</title></file>
+        <file track="07" name="Transformers3.mp4">	        <title>Transformers3</title></file>
+        <file track="08" name="Battle_Los_Angeles.mp4">	    <title>Battle Los Angeles</title></file>
+        <file track="09" name="Fast_and_Furious_5.mp4">	    <title>Fast and Furious 5</title></file>
+        <file track="10" name="AirRaceDDP3.mpg">	        <title>Air Race</title></file>
+        <file track="13" name="20051210-w50s.flv">	        <title>Cool example ...</title></file>
+        <file track="14" name="barsandtone.flv">	        <title>Some tones ...</title></file>
+        <file track="19" name="oow2010-2.flv">		        <title>Video ...</title></file>
+        <file track="20" name="vlcj-speed-run.flv">	        <title>Speed Bikes</title></file>
+<file track="05" name="t3.mp3">		  	            <title>Classical Obo ...</title></file>
+<file track="18" name="t4.mp3">		  	            <title>Electro and Drums ...</title></file>
+-->
