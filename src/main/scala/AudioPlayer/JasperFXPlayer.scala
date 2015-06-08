@@ -45,11 +45,11 @@ object JasperFXPlayer extends App
   val audioPlayer = new AudioPlayer(stage.getDelegate)
   
   scene = new Scene (audioPlayer, 1204, 763, LIGHTBLUE) {
-	 css   = "/AudioPlayer/AudioPlayer.css" :: Nil
+	 css = "/AudioPlayer/AudioPlayer.css" :: Nil
   }
 
   stage.title = "JasperFXPlayer V.2.0"
-  stage.xy = (1400,100)
+  stage.xy    = (1400,100)
 }
 /* === JasperFXPlayer =========================== END ======================================= */
  

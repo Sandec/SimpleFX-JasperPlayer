@@ -87,6 +87,7 @@ class SimpleFXPlayer {
 /* Our Interface Action-Methods ------------------------------------------------------------------------------------------------------ */ 
   def play		  = currentplayer.play   
   def pause		  = currentplayer.pause
+  def stop		  = currentplayer.stop
   def tooglePlay  = if(status.v == PLAYING) pause else play
   def playNext	  = if(playlist != null) {playlist.useNextItem; playPlaylist}   
   def playPrev	  = if(playlist != null) {playlist.usePrevItem; playPlaylist}
@@ -128,7 +129,7 @@ class SimpleFXPlayer {
         getDelegate.setOnEndOfMedia 			 (new Runnable { def run: Unit = playPlaylist }) // TODO
         getDelegate.setAudioSpectrumListener(internalSpectrumListener)
         audioSpectrumListener    = internalSpectrumListener
-        autoPlay				      <-> THIS.autoPlay
+        autoPlay				      <-> THIS.autoPlay// HHS 8.Jun.2015 <-> THIS.autoPlay
         audioSpectrumInterval	<-> THIS.audioSpectrumInterval
 
         audioSpectrumNumBands	<-> THIS.audioSpectrumNumBands
@@ -138,7 +139,7 @@ class SimpleFXPlayer {
         THIS.currentTime	    <--  currentTime
         THIS.totalDuration    <--  {if(totalDuration.v !=null) (totalDuration : Time) else 0 s}
       }
-      play
+      updated(if(autoPlay) play)
   }
   
   private def urlChanged {

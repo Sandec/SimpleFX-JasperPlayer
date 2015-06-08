@@ -15,7 +15,10 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent {
   def mmss(x:  Time) = (x / minute).toInt.toString + ":" + (x%minute / second).toInt // TODO add zeros ...
  
   def getChildrenUnprotected = getChildren  				                // Required for Parent ...
-  
+
+  def play = mpl.play
+  def stop = mpl.stop
+
   private def pin  		  = this								                      // To be pinned to the scene-graph.
   private def NO_METERS = 10								                        // Number of vertical stacks of bars.
   private def NO_BARS 	= 20								                        // Bars per vertical meter/stack.
@@ -39,16 +42,15 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent {
   
 
  /* Declare the EasyFXPlayer(extended MediaPlayer) ------------------------------------------------------------------ */
-  private lazy val mpl = new SimpleFXPlayer(PLAYLIST) {
-	  autoPlay	     	   	    = true					                        // Autostart the play-mode.
+  lazy val mpl = new SimpleFXPlayer(PLAYLIST) {
+	  autoPlay	     	   	    = false // true					                // Autostart the play-mode.
 	  audioSpectrumInterval   = 1d/30d					                      // Interval ratio.
     audioSpectrumNumBands 	= NO_METERS			  	                    // Number of Audio-bands.
     noMagnitudeIntervals  	= NO_BARS					                      // Number of Magnitude-intervals.
   	volume	 			 	      <-- volumeKnob.value	                    // Bind the knob to the volume-value.
 	  balance 			 	      <-- balanceKnob.value                     // Bind the knob to the balance-value.
-   balance --> {println("balance: " + balance)}
-       			   leftVu	<--	leftVuMeter				                      // Update VuMeter as values change.
-       			   rightVu	<--	rightVuMeter			                      // Binding the value to the meter.
+    leftVu	              <--	leftVuMeter				                    // Update VuMeter as values change.
+    rightVu	              <--	rightVuMeter			                    // Binding the value to the meter.
   }  
  /* ................................................................................................................. */
    
@@ -56,32 +58,32 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent {
  /* Declare the Buttons --------------------------------------------------------------------------------------------- */
   private class BtnBeh(b:Rectangle) extends Behavior(b){            // Behavior class for all buttons.
 	  def pushIn(duration:Time, howDeep:Double, sw:Double){
-		  b.scale 		   := 	 howDeep in duration                       // Animated a button-push-in.
-		  b.strokeWidth	 :=     	  sw in duration		                    // Animated frame-width.
-		  b.fill			   := BLACK^0.1  in duration  	                    // Animates Black down to 0.1 opac.
-		  // TODO  makeShadow(b, BLACK^0.1)						                          // Shadow with Black 0.1 opac.
+		  b.scale 		   := 	 howDeep in duration                      // Animated a button-push-in.
+		  b.strokeWidth	 :=     	  sw in duration		                  // Animated frame-width.
+		  b.fill			   := BLACK^0.1  in duration  	                  // Animates Black down to 0.1 opac.
+		  // TODO  makeShadow(b, BLACK^0.1)						                  // Shadow with Black 0.1 opac.
 	  }
 	  def pushOut(duration:Time) {
-		  b.scale 		   := 	       1.0 in duration                     // Scales up again, in 1 second.
-		  b.strokeWidth	 :=       	   0 in duration		                  // Eliminates the frame-width.
+		  b.scale 		   := 	       1.0 in duration                    // Scales up again, in 1 second.
+		  b.strokeWidth	 :=       	   0 in duration		                // Eliminates the frame-width.
 		  b.fill			   := TRANSPARENT in duration		                  // Go from Back to transparent in 1 s.
 		  b.effect		    =  null						                            // Eliminates all effects(like shadow).
 	  }
-	  b.onMouseEntered  --> {pushIn (150 ms, 0.96, 3)}                  // When mouse enters, push-in.
-    b.onMouseExited   --> {pushOut(150 ms         )}                  // When mouse exits, push-out.
-    b.onClick         --> {
-      pushIn (100 ms, 0.94, 4)                       // When clicking, pushing, then
-      in(100 ms) --> (pushOut(100 ms        ))  // after 100 ms push out.
+	  b.onMouseEntered --> {pushIn (150 ms, 0.96, 3)}                 // When mouse enters, push-in.
+    b.onMouseExited  --> {pushOut(150 ms         )}                 // When mouse exits, push-out.
+    b.onClick        --> {
+      pushIn (100 ms, 0.94, 4)                                      // When clicking, pushing, then
+      in(100 ms) --> (pushOut(100 ms))                              // after 100 ms push out.
     }
   }
   
   private def newBtn(xp:Double, yp:Double, wp:Double, hp:Double, fun: =>Unit):Rectangle = {
     new Rectangle{										                              // Buttons are rectangles.
     	xy    	        =  (xp, yp)
-      wh              =  (wp, hp) 		                  // Position and size the button.
+      wh              =  (wp, hp) 		                              // Position and size the button.
     	fill   	        =  TRANSPARENT						                    // Use transparent color.
     	stroke 	        =  BLACK 								                      // Set the frame's paint/color.
-    	/*behavior      <--*/ new BtnBeh(this)					                  // Sets the Buttons behavior.
+    	/*behavior      <--*/ new BtnBeh(this)					              // Sets the Buttons behavior.
     	onClick       --> fun 								                        // Assign the onAction-function.
     }
   }	
@@ -98,25 +100,25 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent {
   for (i <- 0 until NO_METERS) {
 	  sliders(i) = new Slider(MIN_GAIN, MAX_GAIN, mpl.gains(i)) {
       orientation = Orientation.VERTICAL
-	    laXY       =  (515+i*58, 228-20)					                      // Here all the vertical Sliders for
-	    prefWH     =  (53		   , 181+40)					                      // the Magnitude are defined.
-	    value    --> {mpl.gain = (i,value)}				                      // Their values set the gain-arrays.
+	    laXY        =  (515+i*58, 228-20)					                    // Here all the vertical Sliders for
+	    prefWH      =  (53		   , 181+40)					                  // the Magnitude are defined.
+	    value     --> {mpl.gain = (i,value)}				                  // Their values set the gain-arrays.
 	  }
   } 
  /* ................................................................................................................. */
 
 
  /* Declare the VU-Pointers ----------------------------------------------------------------------------------------- */
-  @Bind var leftVu  = -40.0			                        // Some magic values maybe ...
-  @Bind var rightVu = -40.0			                        // Initial values for the meter-displays.
+  @Bind var leftVu  = -40.0			                                    // Some magic values maybe ...
+  @Bind var rightVu = -40.0			                                    // Initial values for the meter-displays.
          
-  private def linTmp (line:Line, vu:B[Double]){	                      // Just a helper template-method for
+  private def linTmp (line:Line, vu:B[Double]){	                    // Just a helper template-method for
     line.startEnd	   = ((0,0), (0,-83))		                          // the left- and right-VU-Pointers.
 	  line.strokeWidth = 3
-	  line.stroke  	   = linearGradient(DL2UL, 				                          // Linear Gradient, Down-Left to Upper-Left,
-		                    (0.33, TRANSPARENT), (0.34,BLACK), (1.0,"#7e7e7e")) // with 3 stops.
+	  line.stroke  	   = linearGradient(DL2UL, 				                // Linear Gradient, Down- to Upper-Left, 3 stops.
+		                    (0.33, TRANSPARENT), (0.34,BLACK), (1.0,"#7e7e7e"))
     line.effect 	   = new DropShadow (5, WHITE)
-    line.rotate <-- (-40 + 80 * vu)
+    line.rotate    <-- (-40 + 80 * vu)
 	  //line.transforms = new Rotate {angle <-- {-40 + 80 * vu}} :: Nil // vu-changes set the angle.
   }  										
   
@@ -135,7 +137,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent {
 	    val lowVis          = <-- (mpl.magnitudeLevels(mt) > myBarIx)
 	    val highVis         = <-- (mpl.magnitudeLevels(mt)*mpl.gainLevel(mt) > myBarIx)
 	    val opac	          = <-- (if(highVis) 1.0 else 0.5)
-	    vuMs(ind)           = new Rectangle {laXY=pos(mt,bar); wh=(26,3); fill <-- (DARKRED^opac)} // TODO opac was *
+	    vuMs(ind)           = new Rectangle {laXY=pos(mt,bar); wh=(26,3); fill <-- (DARKRED^opac)}
 	    vuMs(ind).visible <-- lowVis
 	  }
   }		
@@ -167,11 +169,11 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent {
 
  /* Declare the Knobs ----------------------------------------------------------------------------------------------- */
   private lazy val balanceKnob = new Knob (-1, 1, 0  ) {	          // Handles the adjustment of
-    laXY = (738,538); 	toRotate = List(bk1Image)					                // the balance.  It's value is
+    laXY = (738,538); 	toRotate = List(bk1Image)					          // the balance.  It's value is
   } 														                                    // bound to the player(see above).
   
   private lazy val volumeKnob  = new Knob ( 0, 1, 0.5) {	          // This Knob has two rotateable
-    laXY = (910,492); 	toRotate = List(vk1Image, vk2Image)		          // images.
+    laXY = (910,492); 	toRotate = List(vk1Image, vk2Image)		      // images.
   } 	
  /* ................................................................................................................. */
 
@@ -184,8 +186,8 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent {
 			        leftVUPnt		, rightVUPnt,					                    // The VU-Displays(Meters)
 			        balanceKnob	, volumeKnob)					                    // The Knobs.
   sliders.foreach { <++(_ )}
-  vuMs.foreach { <++(_ )}
-			       // sliders		  , vuMs		  )					                    // Vertical sliders and vuMeters.
+  vuMs   .foreach { <++(_ )}
+			       // sliders		  , vuMs		  )					                  // Vertical sliders and vuMeters.
  /* ................................................................................................................. */
 }
 /* === AudioPlayer ============================== END =============================================================== */
