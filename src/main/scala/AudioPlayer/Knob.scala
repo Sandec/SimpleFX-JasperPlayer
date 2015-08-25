@@ -55,9 +55,9 @@ class Knob(val minValue:Double, maxValue:Double, initValue:Double) extends Simpl
 
   @Bind var muted = false; muted --> {currDragAngle = {if(muted) 220 else 0}}
   private def toggleMute = {muted := !muted; lastAnglePosition = currDragAngle}  
-  
-  this.onMousePressed  --> {rotateables.scale := 0.93 in (200 ms)}
-  this.onMouseReleased --> {rotateables.scale := 1.0  in (150 ms)}
+
+  onMousePressed  --> {(rotateables.scale) := 0.93 in (200 ms); ()}
+  onMouseReleased --> {(rotateables.scale) := 1.0  in (150 ms); ()}
 /* ......................................................................................... */
   
   
