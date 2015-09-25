@@ -42,7 +42,7 @@ import simplefx.scene.paint.Color._
 object JasperFXPlayer extends App
 @SimpleFXApp class JasperFXPlayer {
 
-  val audioPlayer = new AudioPlayer(stage.getDelegate)
+  val audioPlayer = new AudioPlayer(stage)
   
   scene = new Scene (audioPlayer, 1204, 763, LIGHTBLUE) {
 	 css = "/AudioPlayer/AudioPlayer.css" :: Nil

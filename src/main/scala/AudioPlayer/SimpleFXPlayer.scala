@@ -121,13 +121,10 @@ class SimpleFXPlayer {
 	    dispose(currentplayer)
       println("PLAY PLAYLIST> trying to play " + plsUrl)
       def classPath2Url = getClass.getResource(plsUrl).toString
-      currentplayer = new MediaPlayer(new Media(classPath2Url)) {
+      currentplayer = new E(new MediaPlayer(new Media(classPath2Url))) {
         println("PLAY PLAYLIST> played " + classPath2Url)
-        println("delegate: " + getDelegate)
-        println("delegate2: " + delegate)
-        println("prop: " + getDelegate.onEndOfMediaProperty())
-        getDelegate.setOnEndOfMedia 			 (new Runnable { def run: Unit = playPlaylist }) // TODO
-        getDelegate.setAudioSpectrumListener(internalSpectrumListener)
+        this.setOnEndOfMedia 			 (new Runnable { def run: Unit = playPlaylist }) // TODO
+        this.setAudioSpectrumListener(internalSpectrumListener)
         audioSpectrumListener    = internalSpectrumListener
         autoPlay				      <-> THIS.autoPlay// HHS 8.Jun.2015 <-> THIS.autoPlay
         audioSpectrumInterval	<-> THIS.audioSpectrumInterval
@@ -138,7 +135,7 @@ class SimpleFXPlayer {
         THIS.status		        <--  status
         THIS.currentTime	    <--  currentTime
         THIS.totalDuration    <--  {if(totalDuration.v !=null) (totalDuration : Time) else 0 s}
-      }
+      }.extended
       updated(if(autoPlay) play)
   }
   

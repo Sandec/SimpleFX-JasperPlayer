@@ -50,9 +50,9 @@ class LoadDialog (st:JStage, loadFun:String=>Unit) {
  
  private val show       = :=(false)
   println("LOADDIALOG> ... Filechooser ... " + url)
- private val chooser   = new FileChooser{
+ private val chooser   = new E(new FileChooser){
    if(show) {
-     urlField.text = this.getDelegate.showOpenDialog(dialog).getAbsolutePath
+     urlField.text = this.showOpenDialog(dialog).getAbsolutePath
    }
    //showOpenDialog()
    //(show, dialog, url){selectedFile-->urlField.text}
