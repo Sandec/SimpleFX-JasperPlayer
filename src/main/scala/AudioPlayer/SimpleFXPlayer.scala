@@ -125,16 +125,16 @@ class SimpleFXPlayer {
         println("PLAY PLAYLIST> played " + classPath2Url)
         this.setOnEndOfMedia 			 (new Runnable { def run: Unit = playPlaylist }) // TODO
         this.setAudioSpectrumListener(internalSpectrumListener)
-        audioSpectrumListener    = internalSpectrumListener
-        autoPlay				      <-> THIS.autoPlay// HHS 8.Jun.2015 <-> THIS.autoPlay
-        audioSpectrumInterval	<-> THIS.audioSpectrumInterval
+        extended.audioSpectrumListener    = internalSpectrumListener
+        this.autoPlay				      <-> THIS.autoPlay// HHS 8.Jun.2015 <-> THIS.autoPlay
+        this.audioSpectrumInterval	<-> THIS.audioSpectrumInterval
 
-        audioSpectrumNumBands	<-> THIS.audioSpectrumNumBands
-        volume			          <-> THIS.volume
-        balance			          <-> THIS.balance
-        THIS.status		        <--  status
-        THIS.currentTime	    <--  currentTime
-        THIS.totalDuration    <--  {if(totalDuration.v !=null) (totalDuration : Time) else 0 s}
+        this.audioSpectrumNumBands	<-> THIS.audioSpectrumNumBands
+        this.volume			            <-> THIS.volume
+        this.balance			          <-> THIS.balance
+        THIS.status		        <--  this.status
+        THIS.currentTime	    <--  extended.currentTime
+        THIS.totalDuration    <--  {if(this.totalDuration.v !=null) (this.totalDuration : Time) else 0 s}
       }.extended
       updated(if(autoPlay) play)
   }
@@ -174,9 +174,9 @@ class SimpleFXPlayer {
 /* Our standard SpectrumListener ----------------------------------------------------------------------------------------------------- */ 
   private def internalSpectrumListener = new AudioSpectrumListener() {	
   	override def spectrumDataUpdate(iTimestamp:Double, iDuration:Double, iMagnitudes:Array[Float], phases:Array[Float] ) {
-	  var tempMagnitudes = new Array[Double](MAX_SIGNAL_LEVELS)
-	  var tempSignals    = new Array[Double](MAX_SIGNAL_LEVELS)
-	  var tempLevels     = new Array[Int   ](MAX_SIGNAL_LEVELS)
+	  var tempMagnitudes = new Array[Double](iMagnitudes.length) //MAX_SIGNAL_LEVELS)
+	  var tempSignals    = new Array[Double](iMagnitudes.length) //MAX_SIGNAL_LEVELS)
+	  var tempLevels     = new Array[Int   ](iMagnitudes.length) //MAX_SIGNAL_LEVELS)
 	  var average 		 = 0.0
 	  for (i <- 0 until iMagnitudes.length ) { 
 		  tempMagnitudes(i) = iMagnitudes(i)
