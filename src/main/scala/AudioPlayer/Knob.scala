@@ -69,13 +69,13 @@ class Knob(val minValue:Double, maxValue:Double, initValue:Double) extends Simpl
   private var 	   currDragQuadrant	 = 0				         // The quadrant and the angle in which
   @Bind private var currDragAngle 	 = 0.0   		         // we currently are during the drag.
   
-  @Bind private var centerX	 = /*<--*//*<:-*/(bilW/2)	   // TODO what does <:-?	// The center of the Knob.  It is bound
-  @Bind private var centerY	 = /*<--*//*<:-*/(bilH/2)	   // TODO what does <:-?	// for one single calculation, only.
+  @Bind private var centerX	 = labW/2	   // TODO what does <:-?	// The center of the Knob.  It is bound
+  @Bind private var centerY	 = labH/2	   // TODO what does <:-?	// for one single calculation, only.
 
-  nextFrame --> {
-    centerX = bilW/2
-    centerY = bilH/2
-  }
+  nextFrame --> (nextFrame --> { // TODO ... less workarounds please ...
+    centerX = labW/2
+    centerY = labH/2
+  })
   
   private def XoY(p:Point) 	 = abs(p.x)/abs(p.y)		      // The Angle defined through X/Y.
   private def YoX(p:Point) 	 = abs(p.y)/abs(p.x)		      // The Angle defined through Y/X.

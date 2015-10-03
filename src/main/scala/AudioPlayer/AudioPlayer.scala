@@ -10,9 +10,15 @@ import simplefx.core._
 import simplefx.experimental._
 
 /* === AudioPlayer ============================== START ============================================================= */
-class AudioPlayer(stage:JStage) extends SimpleFXParent {
+class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
 
-  def mmss(x:  Time) = (x / minute).toInt.toString + ":" + (x%minute / second).toInt // TODO add zeros ...
+  def mmss(x:  Time) = {
+    val m = (x / minute).toInt
+    val s = (x%minute / second).toInt
+    val ms = "" + m
+    val ss = if(s < 10) "0" + s else "" + s
+    s"$ms:$ss"
+  }
  
   def getChildrenUnprotected = getChildren  				                // Required for Parent ...
 
@@ -43,6 +49,11 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent {
 
  /* Declare the EasyFXPlayer(extended MediaPlayer) ------------------------------------------------------------------ */
   lazy val mpl = new SimpleFXPlayer(PLAYLIST) {
+    currentplayer ==> { pl =>
+      if(pl != null) {
+        THIS <++ (new MediaView(pl))
+      }
+    }
 	  autoPlay	     	   	    = false // true					                // Autostart the play-mode.
 	  audioSpectrumInterval   = 1d/30d					                      // Interval ratio.
     audioSpectrumNumBands 	= NO_METERS			  	                    // Number of Audio-bands.

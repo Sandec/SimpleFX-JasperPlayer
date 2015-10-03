@@ -20,7 +20,7 @@ class SimpleFXPlayer {
   
 /* General, player-undependant interface-variables, -properties and -methods --------------------------------------------------------- */ 
   var playlist:Playlist 	 	= _
-  var currentplayer:MediaPlayer = _
+  @Bind var currentplayer:MediaPlayer = null
   def pls  						= playlist
 
   type T2m = (Int, Double)
