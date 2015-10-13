@@ -29,7 +29,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
   private def NO_METERS = 10								                        // Number of vertical stacks of bars.
   private def NO_BARS 	= 20								                        // Bars per vertical meter/stack.
   
-  private val PATH    	= "AudioPlayer/"
+  private val PATH    	= "/AudioPlayer/"
   private val PLAYLIST	= "/AudioPlayer/Playlist.xml"
   private val PLAYLIST1	= "http://www.archive.org/download/their_finest_hour_vol3/" +
 		  				            "their_finest_hour_vol3_files.xml"
@@ -67,7 +67,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
    
 
  /* Declare the Buttons --------------------------------------------------------------------------------------------- */
-  private class BtnBeh(b:Rectangle) extends Behavior(b){            // Behavior class for all buttons.
+  def btnBeh(b:Rectangle) {            // Behavior class for all buttons.
 	  def pushIn(duration:Time, howDeep:Double, sw:Double){
 		  b.scale 		   := 	 howDeep in duration                      // Animated a button-push-in.
 		  b.strokeWidth	 :=     	  sw in duration		                  // Animated frame-width.
@@ -82,7 +82,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
 	  }
 	  b.onMouseEntered --> {pushIn (150 ms, 0.96, 3)}                 // When mouse enters, push-in.
     b.onMouseExited  --> {pushOut(150 ms         )}                 // When mouse exits, push-out.
-    b.onClick        --> {
+    b.onMouseClicked --> {
       pushIn (100 ms, 0.94, 4)                                      // When clicking, pushing, then
       in(100 ms) --> (pushOut(100 ms))                              // after 100 ms push out.
     }
@@ -94,7 +94,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
       wh              =  (wp, hp) 		                              // Position and size the button.
     	fill   	        =  TRANSPARENT						                    // Use transparent color.
     	stroke 	        =  BLACK 								                      // Set the frame's paint/color.
-    	/*behavior      <--*/ new BtnBeh(this)					              // Sets the Buttons behavior.
+      btnBeh(this)					                                        // Sets the Buttons behavior.
     	onClick       --> fun 								                        // Assign the onAction-function.
     }
   }	
@@ -130,7 +130,6 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
 		                    (0.33, TRANSPARENT), (0.34,BLACK), (1.0,"#7e7e7e"))
     line.effect 	   = new DropShadow (5, WHITE)
     line.rotate    <-- (-40 + 80 * vu)
-	  //line.transforms = new Rotate {angle <-- {-40 + 80 * vu}} :: Nil // vu-changes set the angle.
   }  										
   
   private val leftVUPnt  = new Line {linTmp(this, leftVu ); translateXY = (375,615)}
@@ -156,16 +155,13 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
 
 
  /* Declare the Track-Labels/Text-Displays on the top-left of the screen -------------------------------------------- */
-  private val trackLb = new Label {layoutXY = (122, 95); prefWH = (389,26); text <-- l1; labTmp(this)}    // Line 1.
-  private val timeLb  = new Label {layoutXY = (122,125); prefWH = (389,26); text <-- l2; labTmp(this)}    // Line 2.
-  private val titleLb = new Label {layoutXY = (122,155); prefWH = (389,26); text <-- l3; labTmp(this)}    // Line 3.
-  
-  private def l1 = {
-    println("playlist: " + mpl.pls)
-    "Track: " + (mpl.pls.currentIndex+1) + "/" + mpl.pls.numItems + " " + pstatus
-  }
-  private def l2 = "Time: "  + mmss(mpl.currentTime  ) + "  Remaining: " + 
-		  					               mmss(mpl.remainingTime) + " of " + mmss(mpl.totalDuration)
+  private val trackLb = new Label {layoutXY = (122, 95); labTmp(this); text <-- l1}
+  private val timeLb  = new Label {layoutXY = (122,125); labTmp(this); text <-- l2}
+  private val titleLb = new Label {layoutXY = (122,155); labTmp(this); text <-- l3}
+
+  private def l1 = "Track: " + (mpl.pls.currentIndex+1) + "/" + mpl.pls.numItems + " " + pstatus
+  private def l2 = s"Time: ${mmss(mpl.currentTime)} Remaining: " +
+		  					   s"${mmss(mpl.remainingTime)} of ${mmss(mpl.totalDuration)}"
   private def l3 = mpl.pls.currentItem.title
   
   private def pstatus = mpl.status.v match {
@@ -174,7 +170,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
 	  case _ 		   =>  "Streaming ..."
   } 
   
-  private def labTmp(n:Label) {n.font = new Font(20)}// TODO javafx.scene.text.Font.loadFont(TTF_FONT,20); 	n.textFill=RED}        // Template.
+  private def labTmp(n:Label) {n.font = Font.loadFont(getClass.getResource(TTF_FONT).toString, 14); n.prefWH = (389,26)}
  /* ................................................................................................................. */
   
 

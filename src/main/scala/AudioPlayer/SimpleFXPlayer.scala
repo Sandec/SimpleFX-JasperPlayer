@@ -4,6 +4,7 @@ import simplefx.all.EqualizerBand._
 import simplefx.all.MediaPlayer.Status._
 import simplefx.all.Worker.State._
 import simplefx.all._
+import simplefx.experimental._
 import simplefx.core._
 
 /* === EasyFXPlayer ============================= START =================================== */
@@ -33,8 +34,6 @@ class SimpleFXPlayer {
   @Bind var minGain                  = MIN_GAIN
   @Bind var maxGain                  = MAX_GAIN
   @Bind var gain: (Int, Double)      = null
-  @Bind var minGainLevel             = 0.0
-  @Bind var maxGainLevel             = 1.0
   @Bind var gainLevel: (Int, Double) = null
   @Bind var defaultGainLevel         = 0.75
   @Bind var gainDistance             = <--(gDist)
@@ -58,10 +57,10 @@ class SimpleFXPlayer {
   @Bind var gains					   = gais
   @Bind var gainLevels			 = gail
   
-  def gain     (ind:Int) = if(currentplayer != null) currentplayer.getAudioEqualizer().getBands().get(ind).getGain else MAX_GAIN
+  def gain     (ind:Int) = if(currentplayer != null) currentplayer.audioEqualizer.bands(ind).gain else MAX_GAIN
   def gainLevel(ind:Int) = gainLevels(ind)   
   
-  url 			       --> urlChanged
+  url 			                --> urlChanged
   gain 			      .onChange --> gainChanged
   gainLevel 	    .onChange --> gainLevelChanged
   defaultGainLevel.onChange --> defaultGainLevelChanged
@@ -88,9 +87,9 @@ class SimpleFXPlayer {
   def play		  = currentplayer.play   
   def pause		  = currentplayer.pause
   def stop		  = currentplayer.stop
-  def tooglePlay  = if(status.v == PLAYING) pause else play
-  def playNext	  = if(playlist != null) {playlist.useNextItem; playPlaylist}   
-  def playPrev	  = if(playlist != null) {playlist.usePrevItem; playPlaylist}
+  def tooglePlay= if(status.v == PLAYING) pause else play
+  def playNext	= if(playlist != null) {playlist.useNextItem; playPlaylist}
+  def playPrev	= if(playlist != null) {playlist.usePrevItem; playPlaylist}
   def skip		  = if(playlist != null) playlist.skip
   def back		  = if(playlist != null) playlist.back
 /* ................................................................................................................................... */ 
@@ -124,8 +123,7 @@ class SimpleFXPlayer {
       currentplayer = new E(new MediaPlayer(new Media(classPath2Url))) {
         println("PLAY PLAYLIST> played " + classPath2Url)
         this.setOnEndOfMedia 			 (new Runnable { def run: Unit = playPlaylist }) // TODO
-        this.setAudioSpectrumListener(internalSpectrumListener)
-        extended.audioSpectrumListener    = internalSpectrumListener
+        extended.audioSpectrumListener    = InternalSpectrumListener
         this.autoPlay				      <-> THIS.autoPlay// HHS 8.Jun.2015 <-> THIS.autoPlay
         this.audioSpectrumInterval	<-> THIS.audioSpectrumInterval
 
@@ -142,7 +140,7 @@ class SimpleFXPlayer {
   private def urlChanged {
     checkInit
     println("loading: " + url)
-	playlist = new Playlist(url) {
+	  playlist = new Playlist(url) {
       state.onChange --> {if(state.v == SUCCEEDED) {
      	  			playlist.useNextItem
     	  			playPlaylist
@@ -172,30 +170,29 @@ class SimpleFXPlayer {
 
   
 /* Our standard SpectrumListener ----------------------------------------------------------------------------------------------------- */ 
-  private def internalSpectrumListener = new AudioSpectrumListener() {	
+  object InternalSpectrumListener extends AudioSpectrumListener() {
   	override def spectrumDataUpdate(iTimestamp:Double, iDuration:Double, iMagnitudes:Array[Float], phases:Array[Float] ) {
-	  var tempMagnitudes = new Array[Double](iMagnitudes.length) //MAX_SIGNAL_LEVELS)
-	  var tempSignals    = new Array[Double](iMagnitudes.length) //MAX_SIGNAL_LEVELS)
-	  var tempLevels     = new Array[Int   ](iMagnitudes.length) //MAX_SIGNAL_LEVELS)
-	  var average 		 = 0.0
-	  for (i <- 0 until iMagnitudes.length ) { 
-		  tempMagnitudes(i) = iMagnitudes(i)
-		  tempSignals	(i) = ((60 + tempMagnitudes(i))/60)					// Maps to a signal of the range [0,1].
-		  tempLevels 	(i) = (tempSignals(i)*noMagnitudeIntervals).toInt	// Maps to a value  of the range [0,noMagnitudeIntervals].
-		  
-		  if(average < 3) average += tempSignals(i)
+	    var tempMagnitudes = new Array[Double](iMagnitudes.length) //MAX_SIGNAL_LEVELS)
+	    var tempSignals    = new Array[Double](iMagnitudes.length) //MAX_SIGNAL_LEVELS)
+	    var tempLevels     = new Array[Int   ](iMagnitudes.length) //MAX_SIGNAL_LEVELS)
+	    var average 		 = 0.0
+	    for (i <- 0 until iMagnitudes.length ) {
+	  	  tempMagnitudes(i) = iMagnitudes(i)
+	  	  tempSignals	(i) = ((60 + tempMagnitudes(i))/60)					// Maps to a signal of the range [0,1].
+	  	  tempLevels 	(i) = (tempSignals(i)*noMagnitudeIntervals).toInt	// Maps to a value  of the range [0,noMagnitudeIntervals].
+
+	  	  if(average < 3) average += tempSignals(i)
+	    }
+
+	    average  			= average / 3
+	    magnitudes	 	= tempMagnitudes
+	    magnitudeSignals 	= tempSignals
+	    magnitudeLevels 	= tempLevels
+
+      leftVuMeter  = average * mini(1.0, 1 - currentplayer.balance)
+      rightVuMeter = average * mini(1.0,-1 + currentplayer.balance)
 	  }
-	  
-	  average  			= average / 3
-	  magnitudes	 	= tempMagnitudes
-	  magnitudeSignals 	= tempSignals
-	  magnitudeLevels 	= tempLevels
-		  
-	  if (currentplayer.balance.v == 0.0) { leftVuMeter  = average; 			  				rightVuMeter = average } else
-	  if (currentplayer.balance    > 0.0) { leftVuMeter  = average * (1-currentplayer.balance); rightVuMeter = average } else
-	  					  				  { rightVuMeter = average * (1+currentplayer.balance); leftVuMeter  = average }
-	}// override def
-  }//private def  url  			   --> urlChanged
+  }
 /* ................................................................................................................................... */     
 }
 /* === EasyFXPlayer ============================= END ===================================== */
