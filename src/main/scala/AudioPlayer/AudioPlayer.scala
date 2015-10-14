@@ -54,7 +54,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
         THIS <++ (new MediaView(pl))
       }
     }
-	  autoPlay	     	   	    = false // true					                // Autostart the play-mode.
+	  autoPlay	     	   	    = true					                        // Autostart the play-mode.
 	  audioSpectrumInterval   = 1d/30d					                      // Interval ratio.
     audioSpectrumNumBands 	= NO_METERS			  	                    // Number of Audio-bands.
     noMagnitudeIntervals  	= NO_BARS					                      // Number of Magnitude-intervals.
@@ -72,7 +72,6 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
 		  b.scale 		   := 	 howDeep in duration                      // Animated a button-push-in.
 		  b.strokeWidth	 :=     	  sw in duration		                  // Animated frame-width.
 		  b.fill			   := BLACK^0.1  in duration  	                  // Animates Black down to 0.1 opac.
-		  // TODO  makeShadow(b, BLACK^0.1)						                  // Shadow with Black 0.1 opac.
 	  }
 	  def pushOut(duration:Time) {
 		  b.scale 		   := 	       1.0 in duration                    // Scales up again, in 1 second.
@@ -88,10 +87,10 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
     }
   }
   
-  private def newBtn(xp:Double, yp:Double, wp:Double, hp:Double, fun: =>Unit):Rectangle = {
+  private def newBtn(pos: Double2 , exp: Double2, fun: =>Unit):Rectangle = {
     new Rectangle{										                              // Buttons are rectangles.
-    	xy    	        =  (xp, yp)
-      wh              =  (wp, hp) 		                              // Position and size the button.
+    	xy    	        =  pos
+      wh              =  exp 		                                    // Position and size the button.
     	fill   	        =  TRANSPARENT						                    // Use transparent color.
     	stroke 	        =  BLACK 								                      // Set the frame's paint/color.
       btnBeh(this)					                                        // Sets the Buttons behavior.
@@ -99,11 +98,11 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
     }
   }	
   
-  private val prevBtn = newBtn(106, 285, 74, 74, {mpl.playPrev  })	// Play previous.
-  private val playBtn = newBtn(201, 285, 88, 74, {mpl.tooglePlay})	// Play/Pause Toggle.
-  private val nextBtn = newBtn(310, 285, 74, 74, {mpl.playNext  })	// Play next item.
-  private val powerBtn= newBtn(104, 532, 68, 86, {Platform.exit })	// Exit App.
-  private val loadBtn = newBtn(413, 285, 77, 74, {new LoadDialog (stage, mpl.pls.load(_))})
+  private val prevBtn = newBtn((106, 285), (74, 74), {mpl.playPrev  })	// Play previous.
+  private val playBtn = newBtn((201, 285), (88, 74), {mpl.tooglePlay})	// Play/Pause Toggle.
+  private val nextBtn = newBtn((310, 285), (74, 74), {mpl.playNext  })	// Play next item.
+  private val powerBtn= newBtn((104, 532), (68, 86), {Platform.exit })	// Exit App.
+  private val loadBtn = newBtn((413, 285), (77, 74), {new LoadDialog (stage, mpl.pls.load(_))})
  /* ................................................................................................................. */
 
 
@@ -128,8 +127,8 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
 	  line.strokeWidth = 3
 	  line.stroke  	   = linearGradient(DL2UL, 				                // Linear Gradient, Down- to Upper-Left, 3 stops.
 		                    (0.33, TRANSPARENT), (0.34,BLACK), (1.0,"#7e7e7e"))
-    line.effect 	   = new DropShadow (5, WHITE)
-    line.rotate    <-- (-40 + 80 * vu)
+    line.effect 	   = new DropShadow (5, BLACK ^ 0.3)
+    line.transform   = new Rotate(-40, 0, 0) { angle <-- (-40 + 80 * vu) }
   }  										
   
   private val leftVUPnt  = new Line {linTmp(this, leftVu ); translateXY = (375,615)}

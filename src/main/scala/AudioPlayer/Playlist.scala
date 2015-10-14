@@ -42,8 +42,7 @@ class Playlist (url:String){
   private def PREV  = if(currentIndex.v==FIRST) LAST  else currentIndex - 1  
   
   private def add(list:B[List[Item]], t:String, u:String) = {list := list ::: Item(t, u) :: Nil}
-	
-//private def newUrl (u:Str, s:Str) = {lastOf(u , "/") + URLEncoder.encode(s, "UTF-8")}
+
   private def newUrl (u:String, s:String) = {u.lastIndexOf("/") + s}
 /* ......................................................................................... */
    
@@ -69,7 +68,7 @@ class Playlist (url:String){
     def call = toRun.apply()
 
     value.onChange  --> {value.foreach(s=> add(items, s.title, s.url))} // Insert all Songs
-    THIS.state      <-- state //stateValue 		  --> THIS.state 										                  // into the Items.
+    THIS.state      <-- this.state //stateValue 		  --> THIS.state 										                  // into the Items.
     THIS.exception  <-- exception //exceptionValue 	--> THIS.exception									                // Bind all outputs.
   } 
   

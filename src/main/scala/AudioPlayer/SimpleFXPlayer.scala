@@ -20,7 +20,7 @@ class SimpleFXPlayer {
   def this(mediaUrl:String) = {this(); url = mediaUrl}
   
 /* General, player-undependant interface-variables, -properties and -methods --------------------------------------------------------- */ 
-  var playlist:Playlist 	 	= _
+  @Bind var playlist:Playlist 	 	= _
   @Bind var currentplayer:MediaPlayer = null
   def pls  						= playlist
 
@@ -115,36 +115,36 @@ class SimpleFXPlayer {
   }
   
   private def playPlaylist {
-	    val plsUrl = playlist.currentItem.url
-	    println("PLAY PLAYLIST> initDone?: " + initDone + " " + plsUrl)
-	    dispose(currentplayer)
-      println("PLAY PLAYLIST> trying to play " + plsUrl)
-      def classPath2Url = getClass.getResource(plsUrl).toString
-      currentplayer = new E(new MediaPlayer(new Media(classPath2Url))) {
-        println("PLAY PLAYLIST> played " + classPath2Url)
-        this.setOnEndOfMedia 			 (new Runnable { def run: Unit = playPlaylist }) // TODO
-        extended.audioSpectrumListener    = InternalSpectrumListener
-        this.autoPlay				      <-> THIS.autoPlay// HHS 8.Jun.2015 <-> THIS.autoPlay
-        this.audioSpectrumInterval	<-> THIS.audioSpectrumInterval
+	  val plsUrl = playlist.currentItem.url
+	  println("PLAY PLAYLIST> initDone?: " + initDone + " " + plsUrl)
+	  dispose(currentplayer)
+    println("PLAY PLAYLIST> trying to play " + plsUrl)
+    def classPath2Url = getClass.getResource(plsUrl).toString
+    currentplayer = new E(new MediaPlayer(new Media(classPath2Url))) {
+      println("PLAY PLAYLIST> played " + classPath2Url)
+      this.setOnEndOfMedia 			 (new Runnable { def run: Unit = {playlist.useNextItem ; playPlaylist }})
+      extended.audioSpectrumListener    = InternalSpectrumListener
+      this.autoPlay				        <-> THIS.autoPlay// HHS 8.Jun.2015 <-> THIS.autoPlay
+      this.audioSpectrumInterval	<-> THIS.audioSpectrumInterval
 
-        this.audioSpectrumNumBands	<-> THIS.audioSpectrumNumBands
-        this.volume			            <-> THIS.volume
-        this.balance			          <-> THIS.balance
-        THIS.status		        <--  this.status
-        THIS.currentTime	    <--  extended.currentTime
-        THIS.totalDuration    <--  {if(this.totalDuration.v !=null) (this.totalDuration : Time) else 0 s}
-      }.extended
-      updated(if(autoPlay) play)
+      this.audioSpectrumNumBands	<-> THIS.audioSpectrumNumBands
+      this.volume			            <-> THIS.volume
+      this.balance			          <-> THIS.balance
+      THIS.status		        <--  this.status
+      THIS.currentTime	    <--  extended.currentTime
+      THIS.totalDuration    <--  {if(this.totalDuration.v !=null) (this.totalDuration : Time) else 0 s}
+    }.extended
+    updated(if(autoPlay) currentplayer.play)
   }
   
   private def urlChanged {
     checkInit
     println("loading: " + url)
 	  playlist = new Playlist(url) {
-      state.onChange --> {if(state.v == SUCCEEDED) {
-     	  			playlist.useNextItem
-    	  			playPlaylist
-      		 	}
+      when(state == SUCCEEDED) --> {
+        println("use next item!!!!!")
+     	  playlist.useNextItem
+    	  playPlaylist
       }
     }
   }
@@ -190,7 +190,7 @@ class SimpleFXPlayer {
 	    magnitudeLevels 	= tempLevels
 
       leftVuMeter  = average * mini(1.0, 1 - currentplayer.balance)
-      rightVuMeter = average * mini(1.0,-1 + currentplayer.balance)
+      rightVuMeter = average * mini(1.0, 1 + currentplayer.balance)
 	  }
   }
 /* ................................................................................................................................... */     
