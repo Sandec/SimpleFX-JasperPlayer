@@ -120,9 +120,13 @@ class SimpleFXPlayer {
 	  dispose(currentplayer)
     println("PLAY PLAYLIST> trying to play " + plsUrl)
     def classPath2Url = getClass.getResource(plsUrl).toString
-    currentplayer = new E(new MediaPlayer(new Media(classPath2Url))) {
+    currentplayer = new E(new MediaPlayer(new Media(classPath2Url))) { player =>
       println("PLAY PLAYLIST> played " + classPath2Url)
-      this.setOnEndOfMedia 			 (new Runnable { def run: Unit = {playlist.useNextItem ; playPlaylist }})
+      this.setOnEndOfMedia 			 (new Runnable { def run: Unit = {
+        player.stop()
+        player.dispose()
+        playlist.useNextItem ; playPlaylist
+      }})
       extended.audioSpectrumListener    = InternalSpectrumListener
       this.autoPlay				        <-> THIS.autoPlay// HHS 8.Jun.2015 <-> THIS.autoPlay
       this.audioSpectrumInterval	<-> THIS.audioSpectrumInterval

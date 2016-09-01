@@ -36,7 +36,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
 
   private val CSS		    = PATH + "efxAudioPlayer.css"
   private val TTF_FONT	= PATH + "lcddot.ttf"						            // Font for the text displays.
-  private val bgImage	  = PATH + "AudioPlayer.png"				          // Background Image.
+  private val bgImage	  = PATH + "AudioPlayer.jpg"				          // Background Image.
   private val bk1Image	= PATH + "balance.png"						          // Image for the balance-knob.
   private val vk1Image	= PATH + "volume.png"						            // Image 1 for the volume-knob.
   private val vk2Image	= PATH + "volume-highlights.png"	          // Image 2 for the volume-knob.
@@ -101,7 +101,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
   private val prevBtn = newBtn((106, 285), (74, 74), {mpl.playPrev  })	// Play previous.
   private val playBtn = newBtn((201, 285), (88, 74), {mpl.tooglePlay})	// Play/Pause Toggle.
   private val nextBtn = newBtn((310, 285), (74, 74), {mpl.playNext  })	// Play next item.
-  private val powerBtn= newBtn((104, 532), (68, 86), {Platform.exit })	// Exit App.
+  private val powerBtn= newBtn((104, 532), (68, 86), {()/*Platform.exit*/ })	// Exit App.
   private val loadBtn = newBtn((413, 285), (77, 74), {new LoadDialog (stage, mpl.pls.load(_))})
  /* ................................................................................................................. */
 
@@ -127,7 +127,7 @@ class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
 	  line.strokeWidth = 3
 	  line.stroke  	   = linearGradient(DL2UL, 				                // Linear Gradient, Down- to Upper-Left, 3 stops.
 		                    (0.33, TRANSPARENT), (0.34,BLACK), (1.0,"#7e7e7e"))
-    line.effect 	   = new DropShadow (5, BLACK ^ 0.3)
+    //line.effect 	   = new DropShadow (5, BLACK ^ 0.3)
     line.transform   = new Rotate(-40, 0, 0) { angle <-- (-40 + 80 * vu) }
   }  										
   
