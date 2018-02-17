@@ -24,7 +24,7 @@ object LoadDialog{
  /* ......................................................................................... */
 
 /* == LoadDialog ================================ START ===================================== */
-class LoadDialog (st:JStage, loadFun:String=>Unit) {
+class LoadDialog (st:Stage, loadFun:String=>Unit) {
 
   println("LOADDIALOG> ... ")
 

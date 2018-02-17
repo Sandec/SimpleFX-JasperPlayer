@@ -10,7 +10,7 @@ import simplefx.core._
 import simplefx.experimental._
 
 /* === AudioPlayer ============================== START ============================================================= */
-class AudioPlayer(stage:JStage) extends SimpleFXParent { THIS =>
+class AudioPlayer(stage: Stage) extends SimpleFXParent { THIS =>
 
   def mmss(x:  Time) = {
     val m = (x / minute).toInt

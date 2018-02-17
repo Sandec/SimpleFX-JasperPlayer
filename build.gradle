@@ -1,28 +1,24 @@
 group 'SANDEC'
-version '0.5'
+version '0.6'
 
 
 buildscript {
     repositories {
         jcenter()
-        mavenLocal()
         maven {
             url "http://sandec.bintray.com/repo"
         }
-        maven {
-            url "http://mix-software.com:8081/nexus/content/repositories/jpro-snapshots"
-        }
     }
     dependencies {
-        classpath 'com.jprotechnologies.jpro:jpro-plugin-gradle:0.1.11-SNAPSHOT'
-        classpath 'SANDEC:simplefx-plugin-gradle:2.4.0'
+        classpath "com.sandec.jpro:jpro-plugin-gradle:$JPRO_PLUGIN_VERSION"
+        classpath "SANDEC:simplefx-plugin-gradle:$SIMPLEFX_VERSION"
+
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     }
 }
 
 
 repositories {
-    mavenLocal()
     jcenter()
 }
 
@@ -32,13 +28,12 @@ apply plugin: 'java'
 sourceCompatibility = 1.8
 
 dependencies {
-    compile 'com.jprotechnologies.jpro:jpro-browser-api:0.1.12-SNAPSHOT'
     compile group: 'org.scala-lang.modules', name: 'scala-xml_2.11', version: '1.0.5'
 }
 
 
 
-apply plugin: 'com.jprotechnologies.jpro'
+apply plugin: 'com.sandec.jpro'
 apply plugin: 'de.sandec.simplefx'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
@@ -48,17 +43,7 @@ apply plugin: 'maven-publish'
 mainClassName = 'AudioPlayer.JasperFXPlayer'
 
 jpro {
-    //jpro version
-    jproVersion = "0.1.14-SNAPSHOT"
-    port=8080
-}
-
-jpro {
-    if (project.hasProperty('JPRO_LICENSE_USERNAME')) {
-        username     ="$JPRO_LICENSE_USERNAME"
-        password     ="$JPRO_LICENSE_PASSWORD"
-        licensenumber="$JPRO_LICENSE_LICENSENUMBER"
-    }
+    jproVersion = "$JPRO_VERSION"
 }
 
 publishing {
