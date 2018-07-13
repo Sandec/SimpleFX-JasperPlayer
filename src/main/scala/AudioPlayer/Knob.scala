@@ -13,7 +13,7 @@ class Knob(val minValue:Double, maxValue:Double, initValue:Double) extends Simpl
   @Bind var value = initValue
   @Bind var toRotate: List[String] = Nil
 
-  private val rotateables = new Group {				     // Create a Group for the rotatable images.
+  private val rotateables = new SimpleFXParent {				     // Create a Group for the rotatable images.
     rotate <-- -currDragAngle
     /*transform <-- Rotate(-currDragAngle)new Rotate {					// Assign a Rotation-effect to it.
       angle  <-- (-currDragAngle)					// Rotate with the currentDragAngle-value.
